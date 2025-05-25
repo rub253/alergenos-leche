@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alérgenos de la Proteína de la Leche</title>
+    <link rel="manifest" href="manifest.json">
+        <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-blue-100 p-5 text-center">
+
+    <h1 class="text-3xl font-bold mb-5">🥛 Alérgenos de la Proteína de la Leche de Vaca</h1>
+
+    <h2 class="text-xl font-semibold mb-3">🔍 Buscar un aditivo alergénico</h2>
+    <input type="text" id="buscador" class="border p-2 w-3/4 rounded" placeholder="Escribe un número E o nombre...">
+    <button onclick="buscarAditivo()" class="bg-blue-500 text-white px-5 py-2 rounded mt-3">Buscar</button>
+    
+    <p id="resultado" class="mt-3 text-lg font-semibold"></p>
+
+    <div class="bg-white p-5 rounded shadow-lg mt-5">
+        <h2 class="text-xl font-semibold mb-3">🧪 Aditivos alergénicos</h2>
+        <ul class="text-left list-disc pl-5">
+            <li><b>E-101</b> - Riboflavina (Vitamina B2)</li>
+            <li><b>E-270</b> - Ácido láctico</li>
+            <li><b>E-325</b> - Lactato de sodio</li>
+            <li><b>E-326</b> - Lactato de potasio</li>
+            <li><b>E-327</b> - Lactato de calcio</li>
+            <li><b>E-472b</b> - Ésteres lácteos de ácidos grasos</li>
+            <li><b>E-478</b> - Ésteres de ácidos grasos y lactilatos</li>
+            <li><b>E-480</b> - Dioctilglicerol</li>
+            <li><b>E-481</b> - Estearoil-2-lactilato de sodio</li>
+            <li><b>E-482</b> - Estearoil-2-lactilato de calcio</li>
+            <li><b>H-4511</b> - Caseinato de sodio</li>
+            <li><b>H-4512</b> - Caseinato de calcio</li>
+            <li><b>H-4513</b> - Caseinato de potasio</li>
+            <li><b>E-966</b> - Lactitol</li>
+        </ul>
+
+        <h2 class="text-xl font-semibold mt-5 mb-3">🚫 Alimentos prohibidos</h2>
+        <ul class="text-left list-disc pl-5">
+            <li>Leche y derivados: yogur, natillas, flanes, quesos, requesón, mantequilla, petit-suisse, cuajada, nata, helados, batidos, crema.</li>
+        </ul>
+
+        <h2 class="text-xl font-semibold mt-5 mb-3">⚠️ Alimentos con presencia de leche</h2>
+        <ul class="text-left list-disc pl-5">
+            <li>Chocolate, galletas, productos de pastelería, besamel.</li>
+            <li>Algunos caramelos (como sugus) y chicles.</li>
+            <li>Margarina, crema de cacao, algunos potitos infantiles.</li>
+            <li>Cereales y papillas.</li>
+            <li>Colorante y esencia de caramelo.</li>
+            <li>Turrón, harinas con elevado contenido proteico.</li>
+        </ul>
+
+        <h2 class="text-xl font-semibold mt-5 mb-3">⚠️ Alimentos con probable presencia de leche</h2>
+        <ul class="text-left list-disc pl-5">
+            <li>Fiambres como jamón de york y embutidos crudos curados.</li>
+            <li>Carnes procesadas como salchichas.</li>
+            <li>Salsas industriales como salsa de tomate.</li>
+            <li>Pan de panadería, pan de molde, baguettes y panes especiales.</li>
+            <li>Horchata, aceitunas, algunos zumos.</li>
+            <li>Cubitos de caldo, alimentos precocinados como purés, mayonesas, sopas, fabadas, cocidos.</li>
+            <li>Conservas como atún.</li>
+        </ul>
+
+        <h2 class="text-xl font-semibold mt-5 mb-3">💄 Otros productos con riesgo</h2>
+        <ul class="text-left list-disc pl-5">
+            <li>Cremas hidratantes, maquillaje y barra de labios.</li>
+            <li>Protectores solares con ingredientes derivados de la leche.</li>
+            <li>Gel de ducha, champú, jabón de manos y dentífrico (por ejemplo, Recaldent derivado de caseína).</li>
+            <li>Toallitas infantiles con ingredientes lácteos.</li>
+        </ul>
+    </div>
+
+    <script>
+        // Función para eliminar tildes y convertir a minúsculas
+        function normalizarTexto(texto) {
+            return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        }
+
+        const aditivosMultilingues = {
+    "E-101": ["Riboflavina", "Vitamina B2", "Riboflavin", "Vitamina B2", "Riboflavina", "Vitamine B2", "Riboflavine"],
+    "E-270": ["Ácido láctico", "Lactic Acid", "Acido Lattico", "Acide lactique", "Milchsäure", "Melkzuur"],
+    "E-325": ["Lactato de sodio", "Sodium Lactate", "Lactato de sódio", "Lattato di sodio", "Lactate de sodium", "Natriumlactat", "Natriumlactaat"],
+    "E-326": ["Lactato de potasio", "Potassium Lactate", "Lactato de potássio", "Lattato di potassio", "Lactate de potassium", "Kaliumlactat", "Kaliumlactaat"],
+    "E-327": ["Lactato de calcio", "Calcium Lactate", "Lactato de cálcio", "Lattato di calcio", "Lactate de calcium", "Calciumlactat", "Calciumlactaat"],
+    "E-472b": ["Ésteres lácteos de ácidos grasos", "Lactic Acid Esters", "Ésteres lácteos de ácidos graxos", "Esteri lattici degli acidi grassi", "Esters d'acide lactique des acides gras", "Milchsäureester von Fettsäuren", "Melkzuur esters van vetzuren"],
+    "E-478": ["Ésteres de ácidos grasos y lactilatos", "Fatty Acid and Lactyl Esters", "Ésteres de ácidos graxos e lactilatos", "Esteri di acidi grassi e lattilati", "Esters d'acides gras et de lactylates", "Fettsäureester und Laktilate", "Vetzuren en lactyl esters"],
+    "E-480": ["Dioctilglicerol", "Dioctylglycerol", "Dioctilglicerol", "Dioctilglicerolo", "Dioctylglycérol", "Dioctylglycerol", "Dioctylglycerol"],
+    "E-481": ["Estearoil-2-lactilato de sodio", "Sodium Stearoyl-2-Lactylate", "Estearoil-2-lactilato de sódio", "Stearoil-2-lattilato di sodio", "Stéaroyl-2-lactylate de sodium", "Stearoyl-2-lactylat-Natrium", "Stearoyl-2-lactylaat natrium"],
+    "E-482": ["Estearoil-2-lactilato de calcio", "Calcium Stearoyl-2-Lactylate", "Estearoil-2-lactilato de cálcio", "Stearoil-2-lattilato di calcio", "Stéaroyl-2-lactylate de calcium", "Stearoyl-2-lactylat-Calcium", "Stearoyl-2-lactylaat calcium"],
+    "H-4511": ["Caseinato de sodio", "Sodium Caseinate", "Caseinato de sódio", "Caseinato di sodio", "Caséinate de sodium", "Natriumkaseinat", "Natriumcaseïnaat"],
+    "H-4512": ["Caseinato de calcio", "Calcium Caseinate", "Caseinato de cálcio", "Caseinato di calcio", "Caséinate de calcium", "Calciumkaseinat", "Calciumcaseïnaat"],
+    "H-4513": ["Caseinato de potasio", "Potassium Caseinate", "Caseinato de potássio", "Caseinato di potassio", "Caséinate de potassium", "Kaliumkaseinat", "Kaliumcaseïnaat"],
+    "E-966": ["Lactitol", "Lactitol", "Lactitol", "Lattitolo", "Lactitol", "Lactitol", "Lactitol"]
+};
+        const palabrasLeche = [
+            "leche", "lácteos", "lacteo", "milk", "dairy", "latte", "latticini", "lait", "lattiero-caseari", "Milch", "Melk", "melkproducten"
+        ];
+        function buscarAditivo() {
+            const entrada = normalizarTexto(document.getElementById("buscador").value.trim());
+            const resultado = document.getElementById("resultado");
+
+            let encontrado = false;
+            let coincidenciaTexto = "";
+
+            for (const codigo in aditivosMultilingues) {
+                const nombres = aditivosMultilingues[codigo].map(nombre => normalizarTexto(nombre));
+                
+                if (nombres.some(nombre => nombre.includes(entrada))) {
+                    coincidenciaTexto += `⚠️ Se ha encontrado: ${codigo} - ${aditivosMultilingues[codigo][0]}<br>`;
+                    encontrado = true;
+                }
+            }
+
+            if (palabrasLeche.some(palabra => entrada.includes(palabra))) {
+                coincidenciaTexto += `⚠️ El producto puede contener trazas de leche o de productos lácteos.<br>`;
+                encontrado = true;
+            }
+
+            resultado.innerHTML = encontrado ? coincidenciaTexto : `✅ "${entrada}" no está en la lista de alérgenos.`;
+            resultado.className = encontrado ? "text-red-500 font-semibold" : "text-green-500 font-semibold";
+        }
+
+        document.getElementById("buscador").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                buscarAditivo();
+            }
+        });
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("service-worker.js")
+                .then(() => console.log("✅ Service Worker registrado correctamente"))
+                .catch(error => console.log("❌ Error registrando Service Worker:", error));
+        }
+    </script>
+</body>
+</html>
