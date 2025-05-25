@@ -15,13 +15,20 @@
     <h2 class="text-xl font-semibold mb-3">🔍 Buscar un aditivo alergénico</h2>
     <input type="text" id="buscador" class="border p-2 w-3/4 rounded" placeholder="Escribe un número E o nombre...">
     <button onclick="buscarAditivo()" class="bg-blue-500 text-white px-5 py-2 rounded mt-3">Buscar</button>
-
-    <button onclick="activarEscaner()" class="bg-green-500 text-white px-5 py-2 rounded mt-3">📷 Escanear ingredientes</button>
     
     <p id="resultado" class="mt-3 text-lg font-semibold"></p>
 
     <video id="video" autoplay style="display: none;"></video>
     <canvas id="canvas" style="display: none;"></canvas>
+    <video id="video" autoplay class="w-3/4 mx-auto border-4 border-blue-500 rounded-md"></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+
+    <!-- Botón de captura -->
+    <button id="btnCaptura" onclick="capturarImagen()" class="bg-red-500 text-white px-5 py-2 rounded mt-3 hidden">
+    📸 Capturar y detener
+    </button>
+
+    <button onclick="activarEscaner()" class="bg-green-500 text-white px-5 py-2 rounded mt-3">📷 Escanear ingredientes</button>
 
     <div class="bg-white p-5 rounded shadow-lg mt-5">
         <h2 class="text-xl font-semibold mb-3">🧪 Aditivos alergénicos</h2>
@@ -137,34 +144,41 @@
                 .then(() => console.log("✅ Service Worker registrado correctamente"))
                 .catch(error => console.log("❌ Error registrando Service Worker:", error));
         }
-        let streamActivo = null;
-        function activarEscaner() {
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                .then(stream => {
-                    streamActivo = stream;
-                    const video = document.getElementById("video");
-                    video.srcObject = stream;
-                    setTimeout(() => capturarImagen(), 3000);
-                })
-                .catch(err => alert("❌ No se pudo acceder a la cámara. Verifica permisos."));
-        }
+    let streamActivo = null;
 
-        function capturarImagen() {
-            const video = document.getElementById("video");
-            const canvas = document.getElementById("canvas");
-            const ctx = canvas.getContext("2d");
+    function activarEscaner() {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(stream => {
+                streamActivo = stream;
+                const video = document.getElementById("video");
+                video.srcObject = stream;
+                video.style.display = "block";
 
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            procesarImagen(canvas);
-            detenerCamara();
-        }
+                document.getElementById("btnCaptura").classList.remove("hidden"); // 📌 Se muestra el botón de captura
+            })
+            .catch(err => alert("❌ No se pudo acceder a la cámara. Verifica permisos."));
+    }
 
-        function detenerCamara() {
-            if (streamActivo) {
-                streamActivo.getTracks().forEach(track => track.stop());
-                streamActivo = null;
-            }
+    function capturarImagen() {
+        const video = document.getElementById("video");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        procesarImagen(canvas);
+
+        detenerCamara(); // 📌 Se oculta la cámara y el botón después de la captura
+    }
+
+    function detenerCamara() {
+        if (streamActivo) {
+            streamActivo.getTracks().forEach(track => track.stop());
+            streamActivo = null;
+
+            document.getElementById("video").style.display = "none"; // 📌 Se oculta la vista previa
+            document.getElementById("btnCaptura").classList.add("hidden"); // 📌 Se oculta el botón
         }
+    }
 
         async function procesarImagen(canvas) {
             const textoDetectado = await Tesseract.recognize(canvas.toDataURL(), "spa+eng+por+ita+fra+deu+nld");
