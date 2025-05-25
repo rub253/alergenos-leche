@@ -119,11 +119,12 @@
         }
     }
 
-    // 🔍 Buscar palabras relacionadas con leche (corregido)
-    if (palabrasLeche.some(palabra => normalizarTexto(palabra).includes(entrada))) {
-        coincidenciaTexto += `⚠️ Atención: El producto lleva leche o puede contener trazas de leche.<br>`;
-    encontrado = true;
-}
+    // 🔍 Buscar palabras relacionadas con leche (coincidencia exacta y normalizada)
+    const palabrasNormalizadas = palabrasLeche.map(palabra => normalizarTexto(palabra));
+    if (palabrasNormalizadas.includes(entrada)) {
+        coincidenciaTexto += `⚠️ Atención: La leche y los productos lácteos pueden contener alérgenos.<br>`;
+        encontrado = true;
+    }
             resultado.innerHTML = encontrado ? coincidenciaTexto : `✅ "${entrada}" no está en la lista de alérgenos.`;
             resultado.className = encontrado ? "text-red-500 font-semibold" : "text-green-500 font-semibold";
         }
