@@ -99,16 +99,21 @@
         function buscarAditivo() {
             const entrada = normalizarTexto(document.getElementById("buscador").value.trim());
             const resultado = document.getElementById("resultado");
+                if (entrada === "") {  // ❌ Si no hay texto, no mostrar todos los alérgenos
+        resultado.innerHTML = "⚠️ Por favor, introduce un término de búsqueda.";
+        resultado.className = "text-red-500 font-semibold";
+        return;
+    }
 
             let encontrado = false;
             let coincidenciaTexto = "";
 
-    // 🔍 Buscar por número E y nombres parciales de aditivos
+    // 🔍 Buscar por número E y nombres exactos de aditivos
     for (const codigo in aditivosMultilingues) {
         const numeroE = codigo.replace("E-", ""); // Convierte "E-270" en "270"
         const nombres = aditivosMultilingues[codigo].map(nombre => normalizarTexto(nombre));
 
-        if (entrada === numeroE || nombres.some(nombre => nombre.includes(entrada))) {
+        if (entrada === numeroE || nombres.includes(entrada)) {  // Ahora solo busca coincidencias exactas en nombres
             coincidenciaTexto += `⚠️ Se ha encontrado: ${codigo} - ${aditivosMultilingues[codigo][0]}<br>`;
             encontrado = true;
         }
