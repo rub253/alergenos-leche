@@ -103,20 +103,20 @@
             let encontrado = false;
             let coincidenciaTexto = "";
 
-                // 🔍 Buscar por número E y nombre de aditivo
+    // 🔍 Buscar por número E y nombres parciales de aditivos
     for (const codigo in aditivosMultilingues) {
         const numeroE = codigo.replace("E-", ""); // Convierte "E-270" en "270"
         const nombres = aditivosMultilingues[codigo].map(nombre => normalizarTexto(nombre));
 
-        if (entrada === numeroE || nombres.some(nombre => nombre === entrada)) {
+        if (entrada === numeroE || nombres.some(nombre => nombre.includes(entrada))) {
             coincidenciaTexto += `⚠️ Se ha encontrado: ${codigo} - ${aditivosMultilingues[codigo][0]}<br>`;
             encontrado = true;
         }
     }
 
-// 🔍 Buscar palabras relacionadas con leche con comparación más flexible
-if (palabrasLeche.some(palabra => normalizarTexto(palabra) === entradaNormalizada)) {
-    coincidenciaTexto += `⚠️ Atención: El producto lleva leche o puede contener trazas de leche.<br>`;
+    // 🔍 Buscar palabras relacionadas con leche (corregido)
+    if (palabrasLeche.some(palabra => normalizarTexto(palabra).includes(entrada))) {
+        coincidenciaTexto += `⚠️ Atención: El producto lleva leche o puede contener trazas de leche.<br>`;
     encontrado = true;
 }
             resultado.innerHTML = encontrado ? coincidenciaTexto : `✅ "${entrada}" no está en la lista de alérgenos.`;
