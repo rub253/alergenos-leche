@@ -24,3 +24,18 @@ self.addEventListener("fetch", function(event) {
             })
     );
 });
+self.addEventListener("activate", function(event) {
+    const cacheWhitelist = [CACHE_NAME];
+    event.waitUntil(
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.map(function(cacheName) {
+                    if (!cacheWhitelist.includes(cacheName)) {
+                        console.log("🗑 Eliminando caché antigua:", cacheName);
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
+});
