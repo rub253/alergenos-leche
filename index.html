@@ -77,30 +77,48 @@
             return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         }
 
-        const aditivos = [
-            "E-101 - Riboflavina (Vitamina B2)", "E-270 - Ácido láctico",
-            "E-325 - Lactato de sodio", "E-326 - Lactato de potasio", "E-327 - Lactato de calcio",
-            "E-472b - Ésteres lácteos de ácidos grasos", "E-478 - Ésteres de ácidos grasos y lactilatos",
-            "E-480 - Dioctilglicerol", "E-481 - Estearoil-2-lactilato de sodio", "E-482 - Estearoil-2-lactilato de calcio",
-            "H-4511 - Caseinato de sodio", "H-4512 - Caseinato de calcio", "H-4513 - Caseinato de potasio",
-            "E-966 - Lactitol"
+        const aditivosMultilingues = {
+    "E-101": ["Riboflavina", "Vitamina B2", "Riboflavin", "Vitamina B2", "Riboflavina", "Vitamine B2", "Riboflavine"],
+    "E-270": ["Ácido láctico", "Lactic Acid", "Acido Lattico", "Acide lactique", "Milchsäure", "Melkzuur"],
+    "E-325": ["Lactato de sodio", "Sodium Lactate", "Lactato de sódio", "Lattato di sodio", "Lactate de sodium", "Natriumlactat", "Natriumlactaat"],
+    "E-326": ["Lactato de potasio", "Potassium Lactate", "Lactato de potássio", "Lattato di potassio", "Lactate de potassium", "Kaliumlactat", "Kaliumlactaat"],
+    "E-327": ["Lactato de calcio", "Calcium Lactate", "Lactato de cálcio", "Lattato di calcio", "Lactate de calcium", "Calciumlactat", "Calciumlactaat"],
+    "E-472b": ["Ésteres lácteos de ácidos grasos", "Lactic Acid Esters", "Ésteres lácteos de ácidos graxos", "Esteri lattici degli acidi grassi", "Esters d'acide lactique des acides gras", "Milchsäureester von Fettsäuren", "Melkzuur esters van vetzuren"],
+    "E-478": ["Ésteres de ácidos grasos y lactilatos", "Fatty Acid and Lactyl Esters", "Ésteres de ácidos graxos e lactilatos", "Esteri di acidi grassi e lattilati", "Esters d'acides gras et de lactylates", "Fettsäureester und Laktilate", "Vetzuren en lactyl esters"],
+    "E-480": ["Dioctilglicerol", "Dioctylglycerol", "Dioctilglicerol", "Dioctilglicerolo", "Dioctylglycérol", "Dioctylglycerol", "Dioctylglycerol"],
+    "E-481": ["Estearoil-2-lactilato de sodio", "Sodium Stearoyl-2-Lactylate", "Estearoil-2-lactilato de sódio", "Stearoil-2-lattilato di sodio", "Stéaroyl-2-lactylate de sodium", "Stearoyl-2-lactylat-Natrium", "Stearoyl-2-lactylaat natrium"],
+    "E-482": ["Estearoil-2-lactilato de calcio", "Calcium Stearoyl-2-Lactylate", "Estearoil-2-lactilato de cálcio", "Stearoil-2-lattilato di calcio", "Stéaroyl-2-lactylate de calcium", "Stearoyl-2-lactylat-Calcium", "Stearoyl-2-lactylaat calcium"],
+    "H-4511": ["Caseinato de sodio", "Sodium Caseinate", "Caseinato de sódio", "Caseinato di sodio", "Caséinate de sodium", "Natriumkaseinat", "Natriumcaseïnaat"],
+    "H-4512": ["Caseinato de calcio", "Calcium Caseinate", "Caseinato de cálcio", "Caseinato di calcio", "Caséinate de calcium", "Calciumkaseinat", "Calciumcaseïnaat"],
+    "H-4513": ["Caseinato de potasio", "Potassium Caseinate", "Caseinato de potássio", "Caseinato di potassio", "Caséinate de potassium", "Kaliumkaseinat", "Kaliumcaseïnaat"],
+    "E-966": ["Lactitol", "Lactitol", "Lactitol", "Lattitolo", "Lactitol", "Lactitol", "Lactitol"]
+};
+        const palabrasLeche = [
+            "leche", "lácteos", "lacteo", "milk", "dairy", "latte", "latticini", "lait", "lattiero-caseari", "Milch", "Melk", "melkproducten"
         ];
-
         function buscarAditivo() {
             const entrada = normalizarTexto(document.getElementById("buscador").value.trim());
             const resultado = document.getElementById("resultado");
 
-            const coincidencias = aditivos.filter(aditivo =>
-                normalizarTexto(aditivo).includes(entrada)
-            );
+            let encontrado = false;
+            let coincidenciaTexto = "";
 
-            if (coincidencias.length > 0) {
-                resultado.innerHTML = `⚠️ Se ha encontrado:<br>${coincidencias.join('<br>')}`;
-                resultado.className = "text-red-500 font-semibold";
-            } else {
-                resultado.textContent = `✅ ${entrada} no está en la lista de aditivos alergénicos.`;
-                resultado.className = "text-green-500 font-semibold";
+            for (const codigo in aditivosMultilingues) {
+                const nombres = aditivosMultilingues[codigo].map(nombre => normalizarTexto(nombre));
+                
+                if (nombres.some(nombre => nombre.includes(entrada))) {
+                    coincidenciaTexto += `⚠️ Se ha encontrado: ${codigo} - ${aditivosMultilingues[codigo][0]}<br>`;
+                    encontrado = true;
+                }
             }
+
+            if (palabrasLeche.some(palabra => entrada.includes(palabra))) {
+                coincidenciaTexto += `⚠️ Puede contener trazas de leche o de productos lácteos.<br>`;
+                encontrado = true;
+            }
+
+            resultado.innerHTML = encontrado ? coincidenciaTexto : `✅ "${entrada}" no está en la lista de alérgenos.`;
+            resultado.className = encontrado ? "text-red-500 font-semibold" : "text-green-500 font-semibold";
         }
 
         document.getElementById("buscador").addEventListener("keypress", function(event) {
