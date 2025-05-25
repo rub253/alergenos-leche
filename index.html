@@ -108,12 +108,18 @@
             let encontrado = false;
             let coincidenciaTexto = "";
 
-    // 🔍 Buscar por número E y nombres exactos de aditivos
+    // 🔍 Buscar por número E sin "E-" (solo si el número es completo)
     for (const codigo in aditivosMultilingues) {
         const numeroE = codigo.replace("E-", ""); // Convierte "E-270" en "270"
         const nombres = aditivosMultilingues[codigo].map(nombre => normalizarTexto(nombre));
 
-        if (entrada === numeroE || nombres.includes(entrada)) {  // Ahora solo busca coincidencias exactas en nombres
+        if (entrada === numeroE) {  
+            coincidenciaTexto += `⚠️ Se ha encontrado: ${codigo} - ${aditivosMultilingues[codigo][0]}<br>`;
+            encontrado = true;
+        }
+
+        // 🔍 Buscar por nombre completo del aditivo (no acepta términos parciales)
+        if (nombres.includes(entrada)) {  
             coincidenciaTexto += `⚠️ Se ha encontrado: ${codigo} - ${aditivosMultilingues[codigo][0]}<br>`;
             encontrado = true;
         }
