@@ -1,9 +1,9 @@
 const CACHE_NAME = "app-cache-v1";
 const urlsToCache = [
-    "/index.html",
-    "/manifest.json",
-    "/icono.png",
-    "/icono-grande.png"
+    "/alergenos-leche/index.html",
+    "/alergenos-leche/manifest.json",
+    "/alergenos-leche/icono.png",
+    "/alergenos-leche/icono-grande.png"
 ];
 
 self.addEventListener("install", function(event) {
