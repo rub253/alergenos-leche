@@ -1,4 +1,4 @@
-const CACHE_NAME = "app-cache-v1";
+const CACHE_NAME = "app-cache-v2";
 const urlsToCache = [
     "/alergenos-leche/index.html",
     "/alergenos-leche/manifest.json",
@@ -24,18 +24,17 @@ self.addEventListener("fetch", function(event) {
             })
     );
 });
-self.addEventListener("activate", function(event) {
-    const cacheWhitelist = [CACHE_NAME];
+self.addEventListener("activate", (event) => {
     event.waitUntil(
-        caches.keys().then(function(cacheNames) {
+        caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map(function(cacheName) {
-                    if (!cacheWhitelist.includes(cacheName)) {
-                        console.log("🗑 Eliminando caché antigua:", cacheName);
+                cacheNames.map((cacheName) => {
+                    if (cacheName !== CACHE_NAME) {
                         return caches.delete(cacheName);
                     }
                 })
             );
         })
     );
+    self.clients.claim(); // 📌 Hace que la nueva versión se active de inmediato
 });
